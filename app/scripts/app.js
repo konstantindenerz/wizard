@@ -36,6 +36,24 @@
 			return result;
 		}
 
+		function checkNavigationState(){
+			var currentPage = pages.filter('.current');
+			var currentPageIndex = pages.index(currentPage);
+			var newCurrentPageIndex = currentPageIndex - 1;
+			if(newCurrentPageIndex >= 0){
+				navLeft.removeClass('disabled');
+			}else{
+				navLeft.addClass('disabled');
+			}
+			
+			newCurrentPageIndex = currentPageIndex + 1;
+			if(newCurrentPageIndex < pages.length){
+				navRight.removeClass('disabled');
+			}else{
+				navRight.addClass('disabled');
+			}
+		}
+
 		function navigate(direction){
 			var currentPage = pages.filter('.current');
 			var currentPageIndex = pages.index(currentPage);
@@ -46,6 +64,8 @@
 				var newCurrentPage = pages.eq(newCurrentPageIndex);
 				newCurrentPage.addClass('current');
 				updateProcess(newCurrentPage);
+				checkNavigationState();
+				
 			}
 
 
@@ -133,25 +153,29 @@
 		}
 
 		navLeft.click(function(){
-			var direction = -1;
-			if(canNavigate(direction)){
-				update(context);
-				navigate(direction);
-				removeHint();
-				use(context);
+			if(!$(this).hasClass('disabled')){
+				var direction = -1;
+				if(canNavigate(direction)){
+					update(context);
+					navigate(direction);
+					removeHint();
+					use(context);
+				}
 			}
 		});
 
 		navRight.click(function(){
-			var direction = 1;
-			if(canNavigate(direction)){
-				update(context);
-				navigate(direction);
-				if(isOverview()){
-					generateOverview();
+			if(!$(this).hasClass('disabled')){
+				var direction = 1;
+				if(canNavigate(direction)){
+					update(context);
+					navigate(direction);
+					if(isOverview()){
+						generateOverview();
+					}
+					removeHint();
+					use(context);
 				}
-				removeHint();
-				use(context);
 			}
 		});
 
