@@ -102,6 +102,15 @@
 				}
 			}
 
+			selector = ['[name="','otherField','"]'].join('');
+			field = content.find(selector);
+			if(field.length>0){
+				if(field.val() === ''){
+					showHint("One or more fields are invalid");
+					result = false;
+				}
+			}
+
 			return result;
 		}
 
