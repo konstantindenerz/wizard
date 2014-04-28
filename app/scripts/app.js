@@ -1,5 +1,7 @@
 (function(scope){
 
+/*
+
 	$(function(){
 		var context = {
 			title: '',
@@ -45,7 +47,7 @@
 			}else{
 				navLeft.addClass('disabled');
 			}
-			
+
 			newCurrentPageIndex = currentPageIndex + 1;
 			if(newCurrentPageIndex < pages.length){
 				navRight.removeClass('disabled');
@@ -65,7 +67,7 @@
 				newCurrentPage.addClass('current');
 				updateProcess(newCurrentPage);
 				checkNavigationState();
-				
+
 			}
 
 
@@ -86,7 +88,7 @@
 			hint.append('<div class="info"></div>')
 			hint.append(['<div class="message">',message,'</div>'].join(''))
 			currentPage.children('.content').before(hint);
-			
+
 		}
 
 		function validateCurrentPage(){
@@ -139,7 +141,7 @@
 				process(field, context[fieldName]);
 
 			}
-			
+
 		}
 
 		function isOverview(){
@@ -196,7 +198,7 @@
 			}
 		});
 
-		(function init(){
+	/*	(function init(){
 			navigate(0);
 			use(context);
 
@@ -211,8 +213,99 @@
 			cl.show(); // Hidden by default
 
 		})();
-		
+
 
 	});
+*/
+
+
+scope.labs = scope.labs || {};
+scope.labs.Wizard = scope.labs.Wizard || function(element){
+	var $wizard = $(element);
+	var template = {
+			pages : '<div class="pages"></div>',
+			navigationLeft: '<div class="navigation left"><div class="arrow"></div></div>',
+			navigationRight: '<div class="navigation right"><div class="arrow"></div></div>',
+			progress: '<div class="navigation process"><header><h2>Steps<h2></header><ul class="steps"></ul></div>',
+			step: function generateStepHtml(message, refId){
+				var result = '<li class="step" data-pageref=' + refId + '>';
+				result +='<div class="icon"></div>';
+				result +='<div class="title">' + message + '</div>';
+				result +='</li>';
+				return result;
+			}
+	};
+
+	var viewFactory = {
+		create: function($container){
+			var view = {container: $container};
+			view.container.addClass('wizard');
+			// prepare pages
+			view.pages = view.container.children();
+			view.pages.wrapAll(template.pages);
+			view.pages.addClass('page');
+			view.pages.each(function(index, element){
+				$(this).attr('data-pageid', 'page-' + index);
+			});
+			view.pages.filter(':first').addClass('current');
+
+			var pagesContainer = view.container.find('.pages');
+
+			// generate progress bar
+			view.progress = $(template.progress);
+			pagesContainer.after(view.progress);
+			var steps = view.progress.find('.steps');
+			view.pages.each(function(index, element){
+				var currentPage = $(this);
+				var pageId = currentPage.attr('data-pageid');
+				var pageTitle = currentPage.children(':first').text();
+				steps.append(template.step(pageTitle, pageId));
+			});
+
+			// generate navigation
+			view.navLeft = $(template.navigationLeft);
+			view.navRight = $(template.navigationRight);
+			pagesContainer.before(view.navLeft);
+			pagesContainer.after(view.navRight);
+
+			return view;
+		}
+	};
+
+	var view = viewFactory.create($wizard);
+
+	var viewModelFactory = {
+		create: function createViewModel(view){
+			var pageValidator = function placeHolder(){};
+
+			view.navLeft.click(function(){
+
+			});
+			
+			return {
+				registerValidator: function registerPageValidator(validator){
+					pageValidator = validator;
+				},
+				unregisterValidator: function(){
+					pageValidator = function palceHolder(){};
+				}
+			};
+		}
+	};
+
+	var viewModel = viewModelFactory.create(view);
+
+
+
+	return viewModel;
+};
+
+
+$(function(){
+	var wizard = new labs.Wizard('.foo');
+	wizard.registerValidator(function validatePage(page, index){
+		return true;
+	});
+});
 
 })(window);
