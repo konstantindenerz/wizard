@@ -40,7 +40,7 @@
 			var currentPage = pages.filter('.current');
 			var currentPageIndex = pages.index(currentPage);
 			var newCurrentPageIndex = currentPageIndex - 1;
-			if(newCurrentPageIndex >= 0){
+			if(newCurrentPageIndex >= 0 && !IsPersistPage()){
 				navLeft.removeClass('disabled');
 			}else{
 				navLeft.addClass('disabled');
@@ -134,12 +134,20 @@
 		}
 
 		function isOverview(){
+			return isPage('page-overview');
+		}
+
+		function isPage(id){
 			var result = false;
 			var currentPage = pages.filter('.current');
-			if(currentPage.attr('data-pageid') === 'page-overview'){
+			if(currentPage.attr('data-pageid') === id){
 				result = true;
 			}
 			return result;
+		}
+
+		function IsPersistPage(){
+			return isPage('page-persist');
 		}
 
 		function generateOverview(){
